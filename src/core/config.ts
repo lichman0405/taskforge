@@ -1,7 +1,4 @@
-import dotenv from 'dotenv';
-
-// Load environment variables
-dotenv.config();
+// Environment variables should be loaded by the application, not the library
 
 export type LLMProvider = 'openai' | 'anthropic' | 'gemini' | 'ollama' | 'custom';
 export type EmbeddingProvider = 'openai' | 'gemini' | 'local';

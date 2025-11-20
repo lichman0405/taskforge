@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { optimizeTaskDecomposition } from './dist/service/taskService.js';
 import { createLLMClient, createEmbeddingClient } from './dist/llm/factory.js';
 import { getLLMConfig, getEmbeddingConfig } from './dist/core/config.js';

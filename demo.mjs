@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { computeAcyclicity, computeHierarchyConsistency, computeHierarchyBalance } from './dist/metrics/structural.js';
 
 console.log('=== TaskForce Iteration 1 - Structural Metrics Demo ===\n');

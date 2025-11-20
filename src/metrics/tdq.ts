@@ -12,16 +12,18 @@ export interface TDQWeights {
     executability: number;
 }
 
+export interface TDQBreakdown {
+    acyclicity: EvaluationResult;
+    hierarchy: EvaluationResult;
+    balance: EvaluationResult;
+    granularity: EvaluationResult;
+    redundancy: EvaluationResult;
+    executability: EvaluationResult;
+}
+
 export interface TDQResult {
     score: number; // 0-1, weighted average
-    breakdown: {
-        acyclicity: EvaluationResult;
-        hierarchy: EvaluationResult;
-        balance: EvaluationResult;
-        granularity: EvaluationResult;
-        redundancy: EvaluationResult;
-        executability: EvaluationResult;
-    };
+    breakdown: TDQBreakdown;
     weights: TDQWeights;
     issues: string[]; // Human-readable issues found
 }

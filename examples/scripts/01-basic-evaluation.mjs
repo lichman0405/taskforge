@@ -23,6 +23,26 @@ import fs from 'fs/promises';
 
 console.log('=== Example 01: Basic Evaluation ===\n');
 
+// 辅助函数：显示任务树结构
+function displayTaskTree(node, prefix = '', isLast = true) {
+    const connector = isLast ? '└── ' : '├── ';
+    const line = prefix + connector + node.title;
+
+    console.log(line);
+
+    if (node.effort_estimate) {
+        const effortPrefix = prefix + (isLast ? '    ' : '│   ');
+        console.log(effortPrefix + '⏱️  ' + node.effort_estimate + 'h');
+    }
+
+    const childPrefix = prefix + (isLast ? '    ' : '│   ');
+    if (node.children) {
+        node.children.forEach((child, index) => {
+            displayTaskTree(child, childPrefix, index === node.children.length - 1);
+        });
+    }
+}
+
 // 示例：一个简单的任务树
 const sampleTaskTree = {
     id: 'root',
@@ -89,6 +109,13 @@ const sampleTaskTree = {
 
 async function main() {
     try {
+        // 显示任务描述和结构
+        console.log('📝 原始任务描述:');
+        console.log(sampleTaskTree.description || sampleTaskTree.title);
+        console.log('\n📋 任务树结构:');
+        displayTaskTree(sampleTaskTree);
+        console.log('\n' + '─'.repeat(50) + '\n');
+
         // 初始化客户端
         const llmConfig = getLLMConfig();
         const embeddingConfig = getEmbeddingConfig();

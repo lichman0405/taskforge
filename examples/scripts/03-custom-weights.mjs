@@ -5,6 +5,16 @@
  * 比较不同权重配置对 TDQ 分数的影响
  */
 
+// 加载环境变量（从项目根目录）
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const projectRoot = join(__dirname, '../../');
+dotenv.config({ path: join(projectRoot, '.env') });
+
 import { computeTDQ, DEFAULT_WEIGHTS } from '../../dist/metrics/tdq.js';
 import { generateTaskTree } from '../../dist/service/taskService.js';
 import { createLLMClient, createEmbeddingClient } from '../../dist/llm/factory.js';

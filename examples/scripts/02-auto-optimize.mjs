@@ -5,6 +5,16 @@
  * 从文本输入生成任务树，并自动迭代优化
  */
 
+// 加载环境变量（从项目根目录）
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const projectRoot = join(__dirname, '../../');
+dotenv.config({ path: join(projectRoot, '.env') });
+
 import { optimizeTaskDecomposition } from '../../dist/service/taskService.js';
 import { createLLMClient, createEmbeddingClient } from '../../dist/llm/factory.js';
 import { getLLMConfig, getEmbeddingConfig } from '../../dist/core/config.js';

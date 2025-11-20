@@ -5,6 +5,16 @@
  * 不进行优化，只进行评分
  */
 
+// 加载环境变量（从项目根目录）
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const projectRoot = join(__dirname, '../../');
+dotenv.config({ path: join(projectRoot, '.env') });
+
 import { computeTDQ, analyzeTDQIssues } from '../../dist/metrics/tdq.js';
 import { createLLMClient, createEmbeddingClient } from '../../dist/llm/factory.js';
 import { getLLMConfig, getEmbeddingConfig } from '../../dist/core/config.js';

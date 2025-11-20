@@ -92,7 +92,54 @@ npm run demo:optimize
 
 ---
 
-## 📖 使用示例
+## 📦 作为库使用
+
+您可以将 TaskForge 作为依赖安装到您的项目中：
+
+### 安装
+
+```bash
+npm install git+https://github.com/lichman0405/taskforge.git
+```
+
+### 代码集成
+
+```javascript
+import { 
+  optimizeTaskDecomposition, 
+  createLLMClient, 
+  createEmbeddingClient 
+} from 'taskforge';
+import 'dotenv/config'; // 确保加载环境变量
+
+// 1. 配置客户端
+const llmClient = createLLMClient({
+  provider: 'openai',
+  apiKey: process.env.OPENAI_API_KEY,
+  model: 'gpt-4o-mini'
+});
+
+const embeddingClient = createEmbeddingClient({
+  provider: 'local',
+  model: 'Xenova/all-MiniLM-L6-v2'
+});
+
+// 2. 运行优化
+const result = await optimizeTaskDecomposition(
+  "创建一个在线教育平台",
+  llmClient,
+  embeddingClient,
+  {
+    maxIterations: 3,
+    targetTDQ: 0.75
+  }
+);
+
+```
+
+---
+
+## 📖 源码开发示例
 
 ### 基础用法
 

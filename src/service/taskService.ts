@@ -28,6 +28,37 @@ const DEFAULT_CONFIG: OptimizationConfig = {
 };
 
 /**
+ * Helper to clean and parse JSON from LLM response
+ */
+function cleanAndParseJSON<T>(response: string): T {
+    // Remove markdown code blocks
+    let cleaned = response.replace(/```json/g, '').replace(/```/g, '');
+
+    // Find first '{' or '[' and last '}' or ']'
+    const firstBrace = cleaned.indexOf('{');
+    const firstBracket = cleaned.indexOf('[');
+    const start = (firstBrace !== -1 && (firstBracket === -1 || firstBrace < firstBracket)) ? firstBrace : firstBracket;
+
+    const lastBrace = cleaned.lastIndexOf('}');
+    const lastBracket = cleaned.lastIndexOf(']');
+    const end = (lastBrace !== -1 && (lastBracket === -1 || lastBrace > lastBracket)) ? lastBrace : lastBracket;
+
+    if (start === -1 || end === -1) {
+        throw new Error('No JSON object or array found in response');
+    }
+
+    cleaned = cleaned.substring(start, end + 1);
+
+    try {
+        return JSON.parse(cleaned) as T;
+    } catch (error) {
+        console.error('JSON Parse Error. Raw response:', response);
+        console.error('Cleaned response:', cleaned);
+        throw error;
+    }
+}
+
+/**
  * Generate initial task tree from user input
  */
 export async function generateTaskTree(
@@ -36,15 +67,7 @@ export async function generateTaskTree(
 ): Promise<TaskNode> {
     const prompt = getGenerateTaskTreePrompt(userInput);
     const response = await llmClient.chat([{ role: 'user', content: prompt }]);
-
-    // Extract JSON from response (in case LLM adds extra text)
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-        throw new Error('LLM did not return valid JSON');
-    }
-
-    const tree = JSON.parse(jsonMatch[0]) as TaskNode;
-    return tree;
+    return cleanAndParseJSON<TaskNode>(response);
 }
 
 /**
@@ -63,15 +86,7 @@ async function refineTaskTree(
 
     const prompt = getRefineTaskTreePrompt(currentTree, tdqResult.issues, scores);
     const response = await llmClient.chat([{ role: 'user', content: prompt }]);
-
-    // Extract JSON from response
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-        throw new Error('LLM did not return valid JSON for refinement');
-    }
-
-    const refinedTree = JSON.parse(jsonMatch[0]) as TaskNode;
-    return refinedTree;
+    return cleanAndParseJSON<TaskNode>(response);
 }
 
 /**
@@ -177,13 +192,5 @@ export async function decomposeTask(
 ): Promise<TaskNode[]> {
     const prompt = getDecomposeTaskPrompt(task);
     const response = await llmClient.chat([{ role: 'user', content: prompt }]);
-
-    // Extract JSON array from response
-    const jsonMatch = response.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) {
-        throw new Error('LLM did not return valid JSON array');
-    }
-
-    const subtasks = JSON.parse(jsonMatch[0]) as TaskNode[];
-    return subtasks;
+    return cleanAndParseJSON<TaskNode[]>(response);
 }
